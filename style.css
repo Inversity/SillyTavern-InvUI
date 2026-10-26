@@ -1,0 +1,11 @@
+/* Inv UI theme layers. ST loads this file as a <link>; the panel's own styles live in panel.css (loaded by
+   index.js) so the master on/off switch can disable this sheet without unstyling the panel.
+   Every layer reads --inv-* variables that index.js writes onto <html> from the active device profile. */
+@import url("./css/00-palettes.css");
+@import url("./css/10-reading.css");
+@import url("./css/20-unify.css");
+@import url("./css/25-ui-color.css");
+@import url("./css/30-toggles.css");
+@import url("./css/40-edge-panels.css");
+@import url("./css/50-portrait.css");
+@import url("./css/60-mobile.css");

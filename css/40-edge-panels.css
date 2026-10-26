@@ -1,0 +1,35 @@
+/* Inv 40 · Edge Panels
+   Squish fixes for panels that ST designed for the full-width top bar, now living in the shy side edges.
+   Container queries react to the PANEL's width, not the window, so they work at any column size. */
+
+/* QR pills keep their size (they wrap to a new row instead of crushing into each other) */
+#qr--bar .qr--button { flex-shrink: 0 !important; }
+
+/* each wide panel measures itself */
+#PersonaManagement, #WorldInfo, #rm_api_block, #user-settings-block, #rm_extensions_block, #character_popup {
+  container-type: inline-size;
+}
+
+/* Persona Management: list and editor stack instead of squeezing side by side */
+@container (max-width: 760px) {
+  #persona-management-block { flex-direction: column !important; }
+  #persona-management-block > * {
+    width: 100% !important; max-width: none !important; min-width: 0 !important; flex: 0 0 auto !important;
+  }
+  #persona_description { min-height: 14em !important; }
+}
+
+/* World Info: entry header controls wrap neatly, content boxes get room */
+@container (max-width: 760px) {
+  #WorldInfo .world_entry .inline-drawer-header { flex-wrap: wrap; row-gap: 4px; }
+  #WorldInfo .world_entry textarea { min-height: 8em; }
+  #WorldInfo .world_entry .flex-container { flex-wrap: wrap; }
+}
+
+/* Advanced Definitions: big text areas, not tiny ones */
+@container (max-width: 760px) {
+  #character_popup textarea { min-height: 7em; }
+}
+
+/* edge panels get a little breathing room from the screen edge */
+#ptmt-leftBody .ptmt-panel-content, #ptmt-rightBody .ptmt-panel-content { padding-inline: 6px; }

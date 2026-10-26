@@ -1,0 +1,104 @@
+/* Inv 50 · Portrait
+   One "stage portrait" for Moonlit's Ripple AND Echo chat styles: stays on screen while you read,
+   sized to the visible chat height so the whole image fits.
+   Key tricks:
+   - #chat is a size container, so 100cqh = the visible chat height (not the window).
+   - sticky only works if no ancestor between it and #chat has overflow hidden/auto; Echo's text box uses clip instead. */
+
+#chat { container: inv-chat / size; }
+
+#chat .mes[is_user="false"] {
+  --inv-fade: calc(var(--inv-portrait-fade) * 1%);
+  --inv-pad: calc(var(--inv-portrait-pad) * 1px);
+  /* visible chat height, minus the padding above/below and the meta row (#, timer, tokens) under the image */
+  --inv-pv-h: calc(100cqh * var(--inv-portrait-height) / 100 - 2 * var(--inv-pad) - 30px);
+  --inv-pv-w: calc(var(--inv-portrait) * 1vw);
+}
+
+/* soft edges: fade toward the text side and the bottom (Echo's look, adjustable) */
+#chat .mes[is_user="false"] { --inv-fade-dir: to left; }
+@container style(--inv-portrait-side: left) {
+  body.ripplestyle #chat .mes[is_user="false"] { --inv-fade-dir: to right; }
+}
+
+/* ======================= RIPPLE ======================= */
+/* the wrapper: padded off the screen edge, image on top, a tidy meta row (#, timer, tokens) underneath */
+html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper {
+  position: sticky !important; top: 0 !important; align-self: flex-start;
+  flex-shrink: 0 !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, auto);
+  justify-content: center; align-items: center;
+  column-gap: 12px; row-gap: 6px;
+  padding: var(--inv-pad) !important;
+}
+html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper > .avatar { grid-column: 1 / -1; grid-row: 1; justify-self: center; }
+html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper > :not(.avatar) {
+  grid-row: 2; position: static !important; margin: 0 !important; font-size: 0.78rem; white-space: nowrap;
+}
+html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img { max-width: none; }
+
+html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar,
+html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+  height: var(--inv-pv-h) !important; min-height: 0 !important; max-height: var(--inv-pv-h) !important;
+  aspect-ratio: auto !important;
+  border-radius: 15px !important;
+}
+html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+  -webkit-mask-image: linear-gradient(var(--inv-fade-dir), #000 calc(100% - var(--inv-fade)), transparent),
+                      linear-gradient(to bottom, #000 calc(100% - var(--inv-fade)), transparent) !important;
+          mask-image: linear-gradient(var(--inv-fade-dir), #000 calc(100% - var(--inv-fade)), transparent),
+                      linear-gradient(to bottom, #000 calc(100% - var(--inv-fade)), transparent) !important;
+  -webkit-mask-composite: source-in !important;
+          mask-composite: intersect !important;
+}
+/* fit: whole image (width follows the image's own shape) */
+@container style(--inv-portrait-fit: whole) {
+  /* ST caps .avatar at its 48px base size; lift it so the image can take its natural shape */
+  html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar { width: auto !important; min-width: 0 !important; max-width: none !important; }
+  html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+    width: auto !important; min-width: 0 !important; max-width: var(--inv-pv-w) !important; object-fit: contain !important;
+  }
+}
+/* fit: fill a fixed width, cropped from the top so faces stay in frame */
+@container style(--inv-portrait-fit: fill) {
+  html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar,
+  html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+    width: var(--inv-pv-w) !important; min-width: var(--inv-pv-w) !important;
+  }
+  html body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img { object-fit: cover !important; object-position: center calc(var(--inv-portrait-focus, 0) * 1%) !important; }
+}
+/* off: no portrait in Ripple */
+@container style(--inv-portrait-side: off) {
+  html body.ripplestyle #chat .mes.mes[is_user="false"] .mesAvatarWrapper { display: none !important; }
+}
+/* side: portrait on the right, Echo-style */
+@container style(--inv-portrait-side: right) {
+  html body.ripplestyle #chat .mes[is_user="false"] { flex-direction: row-reverse !important; }
+}
+
+/* ======================= ECHO =======================
+   Moonlit's Echo look is untouched: same window width (its Echo width slider), same fixed-to-screen
+   image (background-attachment: fixed + cover = the bright "window into the room" framing), same mask,
+   same corners. The ONLY changes: the window rides along (sticky) and never grows taller than the
+   visible chat. The Inv portrait controls above are Ripple-only; Echo keeps Moonlit's own Echo sliders. */
+html body.echostyle #chat .mes[is_user="false"] .mes_text {
+  display: grid !important;
+  /* the right column IS Moonlit's padding-right: same width, now a real column the window can stick in */
+  grid-template-columns: minmax(0, 1fr) var(--custom-EchoAvatarWidth, 25%);
+  align-items: start;
+  max-width: none !important;
+  padding-right: 0 !important;
+  overflow: clip !important;   /* clips like hidden, but isn't a scroll box, so sticky still works */
+}
+html body.echostyle #chat .mes[is_user="false"] .mes_text > * { grid-column: 1; }
+/* Echo's name row belongs beside its small avatar, not in the centered reading column */
+html body.echostyle #chat .mes .mes_block > .ch_name { max-width: none !important; margin-inline: 0 !important; }
+html body.echostyle #chat .mes[is_user="false"] .mes_text::before {
+  position: sticky !important;
+  top: var(--inv-pad) !important; right: auto !important; left: auto !important;
+  grid-column: 2; grid-row: 1 / span 400; align-self: start;
+  width: auto !important;  /* fills its column, which is Moonlit's width */
+  margin: var(--inv-pad) var(--inv-pad) var(--inv-pad) 0;  /* off the outer edge, not the text side */
+  height: min(var(--custom-EchoAvatarHeight, 800px), calc(100cqh - 2 * var(--inv-pad))) !important;
+}

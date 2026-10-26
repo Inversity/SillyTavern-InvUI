@@ -1,0 +1,65 @@
+/* Inv 30 · Comfort Toggles
+   Each block switches on when its panel checkbox writes "true". */
+
+/* Spotlight latest reply: soft accent edge so your eye lands on the newest turn */
+@container style(--inv-spotlight: true) {
+  #chat .mes.last_mes[is_user="false"] {
+    box-shadow: inset 3px 0 0 0 var(--inv-accent, var(--SmartThemeQuoteColor)),
+                0 0 24px -6px color-mix(in srgb, var(--inv-accent, #5aa9e6) 35%, transparent) !important;
+  }
+}
+
+/* Dim older messages; hover any message to bring it back */
+@container style(--inv-dim-old: true) {
+  #chat .mes:not(.last_mes) { opacity: 0.5; transition: opacity 180ms ease; }
+  #chat .mes:not(.last_mes):hover { opacity: 1; }
+}
+
+/* Book drop cap on the first paragraph of each character reply */
+@container style(--inv-dropcap: true) {
+  #chat .mes[is_user="false"] .mes_text > p:first-child::first-letter {
+    float: left;
+    font-family: Georgia, Cambria, serif;
+    font-size: 3.2em;
+    line-height: 0.85;
+    padding: 0.06em 0.12em 0 0;
+    color: var(--inv-accent, var(--SmartThemeQuoteColor));
+    font-weight: 400;
+  }
+}
+
+/* Cinematic vignette: darkens the screen edges, never blocks clicks */
+@container style(--inv-vignette: true) {
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+    background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
+  }
+}
+
+/* Focus mode: chrome fades back until you reach for it */
+@container style(--inv-focus: true) {
+  #qr--bar, #ptmt-leftBody, #ptmt-rightBody,
+  #ptmt-centerBody > .ptmt-pane > .ptmt-pane-grid > .ptmt-tabStrip,
+  #ptmt-centerBody .ptmt-tab-strip,
+  #chat .mes .mes_buttons, #chat .mes .timestamp, #chat .mes .mesIDDisplay, #chat .mes .tokenCounterDisplay, #chat .mes .mes_timer {
+    opacity: 0.12; transition: opacity 200ms ease;
+  }
+  #qr--bar:hover, #send_form:hover #qr--bar, #send_form:focus-within #qr--bar,
+  #ptmt-leftBody:hover, #ptmt-rightBody:hover,
+  #ptmt-centerBody .ptmt-tab-strip:hover,
+  #chat .mes:hover .mes_buttons, #chat .mes:hover .timestamp, #chat .mes:hover .mesIDDisplay,
+  #chat .mes:hover .tokenCounterDisplay, #chat .mes:hover .mes_timer { opacity: 1; }
+}
+
+/* Performance mode: blur and big shadows are the main GPU cost in this stack */
+@container style(--inv-performance: true) {
+  * , *::before, *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
+  }
+  #chat .mes, .ptmt-panel, .drawer-content, .popup { box-shadow: none !important; }
+  /* without blur, tints need more opacity to stay readable */
+  #chat .mes { background-color: color-mix(in srgb, var(--inv-mes, #0f1a2a) 96%, black) !important; }
+}

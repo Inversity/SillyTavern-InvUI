@@ -1,0 +1,149 @@
+/* Inv 00 · Palettes
+   index.js writes --inv-* onto <html>. Style queries on <body> read them (needs Chrome 111+).
+   The defaults below apply until index.js has written its values.
+   Design rules: dark near-solid cards in ONE main hue, a warm accent for dialogue, a neutral (not
+   colored) chat tint so nothing fogs the wallpaper, blue/amber contrast pairs. */
+:root {
+  --inv-palette: off; --inv-dialogue: palette; --inv-font: Noto Sans, sans-serif;
+  --inv-text-size: 19; --inv-weight: 500; --inv-leading: 1.65; --inv-para-gap: 0.9;
+  --inv-tracking: 0.02; --inv-ui-glow: 40; --inv-dlg-glow: 0;
+  --inv-measure: 80; --inv-portrait: 30; --inv-user-style: quiet;
+  --inv-portrait-fit: whole; --inv-portrait-side: left; --inv-portrait-height: 96; --inv-portrait-fade: 30;
+  --inv-portrait-pad: 12; --inv-input-width: 62; --inv-story-card: card;
+  --inv-mobile-portrait: split; --inv-backdrop-strength: 30; --inv-stage-h: 50; --inv-stage-focus: 15; --inv-stage-size: 100; --inv-stage-fade: 0;
+  --inv-glass: 16; --inv-mes-opacity: 94; --inv-wall-blur: 3; --inv-wall-dim: 25;
+  --inv-spotlight: true; --inv-dim-old: false; --inv-dropcap: false;
+  --inv-vignette: false; --inv-focus: false; --inv-performance: false;
+}
+
+/* Token roles
+   bg / bg-2 : panels and raised panels      chat : tint over the wallpaper (kept neutral = no fog)
+   mes / mes-user : message cards (alpha comes from the Solidity slider)
+   text / muted / strong : body, secondary, bold     em : *actions*     quote : "dialogue"
+   accent : UI highlight    warm : hover + cozy edge    border : hairlines */
+
+/* Glimmer Hearth: a classic deep blue, warmed with a honey accent and deeper cards */
+@container style(--inv-palette: hearth) { body {
+  --inv-bg: rgba(12, 20, 31, 0.92); --inv-bg-2: rgba(18, 29, 44, 0.96); --inv-chat: rgba(0, 0, 0, 0.22);
+  --inv-mes: #111d2c; --inv-mes-user: #16263a;
+  --inv-text: #d9e1ea; --inv-muted: #8a9bb0; --inv-strong: #f3f6fa;
+  --inv-em: #e3b973; --inv-quote: #8fc8ff; --inv-accent: #5aa9e6; --inv-warm: #e8a95c;
+  --inv-border: rgba(232, 169, 92, 0.16); --inv-accent-3: #d7a2c8; --inv-danger: #e3743a;
+} }
+
+/* Nord Aurora: deeper Polar Night, yellow dialogue, frost actions */
+@container style(--inv-palette: nord) { body {
+  --inv-bg: rgba(30, 34, 42, 0.93); --inv-bg-2: rgba(40, 45, 56, 0.96); --inv-chat: rgba(0, 0, 0, 0.22);
+  --inv-mes: #232831; --inv-mes-user: #2b313c;
+  --inv-text: #dde3ec; --inv-muted: #8f9bb0; --inv-strong: #eceff4;
+  --inv-em: #88c0d0; --inv-quote: #ebcb8b; --inv-accent: #81a1c1; --inv-warm: #d8a26b;
+  --inv-border: rgba(136, 192, 208, 0.16); --inv-accent-3: #b48ead; --inv-danger: #bf616a;
+} }
+
+/* Tokyo Night: deep indigo-navy, periwinkle UI, amber dialogue, cyan actions */
+@container style(--inv-palette: tokyo) { body {
+  --inv-bg: rgba(22, 23, 34, 0.93); --inv-bg-2: rgba(31, 33, 48, 0.96); --inv-chat: rgba(0, 0, 0, 0.22);
+  --inv-mes: #1a1b26; --inv-mes-user: #222436;
+  --inv-text: #c8d1f5; --inv-muted: #7f88b0; --inv-strong: #e6eaff;
+  --inv-em: #7dcfff; --inv-quote: #e0af68; --inv-accent: #7aa2f7; --inv-warm: #ff9e64;
+  --inv-border: rgba(122, 162, 247, 0.16); --inv-accent-3: #bb9af7; --inv-danger: #f7768e;
+} }
+
+/* Kanagawa: ink-wash night, warm-paper text, carp-gold dialogue, wave-blue actions. The coziest */
+@container style(--inv-palette: kanagawa) { body {
+  --inv-bg: rgba(26, 26, 34, 0.93); --inv-bg-2: rgba(34, 34, 45, 0.96); --inv-chat: rgba(0, 0, 0, 0.22);
+  --inv-mes: #1f1f28; --inv-mes-user: #2a2a37;
+  --inv-text: #dcd7ba; --inv-muted: #9a978a; --inv-strong: #f2ecd0;
+  --inv-em: #7fb4ca; --inv-quote: #e6c384; --inv-accent: #7e9cd8; --inv-warm: #ffa066;
+  --inv-border: rgba(230, 195, 132, 0.14); --inv-accent-3: #957fb8; --inv-danger: #e46876;
+} }
+
+/* Midnight Lantern: inky indigo room lit by one gold lamp, contained and warm */
+@container style(--inv-palette: lantern) { body {
+  --inv-bg: rgba(17, 18, 34, 0.93); --inv-bg-2: rgba(25, 27, 48, 0.96); --inv-chat: rgba(0, 0, 0, 0.24);
+  --inv-mes: #15172b; --inv-mes-user: #1d2038;
+  --inv-text: #e2e1ef; --inv-muted: #9493b4; --inv-strong: #fffaf0;
+  --inv-em: #a8bcff; --inv-quote: #f2c46d; --inv-accent: #8794ff; --inv-warm: #f2b45a;
+  --inv-border: rgba(242, 196, 109, 0.15); --inv-accent-3: #e08fbf; --inv-danger: #ff7a6b;
+} }
+
+/* Deep Harbor: dark teal water, sea-glass actions, lighthouse-amber dialogue */
+@container style(--inv-palette: harbor) { body {
+  --inv-bg: rgba(12, 24, 28, 0.93); --inv-bg-2: rgba(18, 34, 40, 0.96); --inv-chat: rgba(0, 0, 0, 0.22);
+  --inv-mes: #0f1d22; --inv-mes-user: #16282e;
+  --inv-text: #d6e3e1; --inv-muted: #87a19d; --inv-strong: #f0f7f5;
+  --inv-em: #7fd1c7; --inv-quote: #f0c27b; --inv-accent: #4fb3a9; --inv-warm: #f0a35e;
+  --inv-border: rgba(79, 179, 169, 0.16); --inv-accent-3: #e39a8f; --inv-danger: #e3743a;
+} }
+
+/* Lighthouse (CB-tuned): built on the Okabe-Ito colorblind-safe set. Sky-blue actions, amber dialogue,
+   every role separated by lightness as well as hue, so nothing relies on red vs green */
+@container style(--inv-palette: lighthouse) { body {
+  --inv-bg: rgba(14, 20, 28, 0.93); --inv-bg-2: rgba(21, 29, 40, 0.96); --inv-chat: rgba(0, 0, 0, 0.22);
+  --inv-mes: #121a24; --inv-mes-user: #1a2532;
+  --inv-text: #e2e8ef; --inv-muted: #93a3b5; --inv-strong: #ffffff;
+  --inv-em: #56b4e9; --inv-quote: #f2c46d; /* Midnight Lantern's softer gold (was #f0c75e) */ --inv-accent: #3d9bd6; --inv-warm: #e69f00;
+  --inv-border: rgba(86, 180, 233, 0.16);
+  --inv-accent-3: #d98bb6; /* Okabe-Ito reddish purple, lifted for dark bg */
+  --inv-danger: #e3743a;   /* Okabe-Ito vermillion */
+} }
+
+/* ---------- map tokens onto ST + Moonlit + TooManyTabs + Copilot ----------
+   Declared on body so descendants inherit these instead of the :root values. */
+@container not style(--inv-palette: off) { body {
+  /* SillyTavern SmartTheme (Copilot's "Native ST" theme reads these too) */
+  --SmartThemeBodyColor: var(--inv-text);
+  --SmartThemeBodyColorText: var(--inv-text);
+  --SmartThemeBodyColorTextMuted: var(--inv-muted);
+  --SmartThemeEmColor: var(--inv-em);
+  --SmartThemeQuoteColor: var(--inv-quote);
+  --SmartThemeUnderlineColor: var(--inv-accent);
+  --SmartThemeBlurTintColor: var(--inv-bg);
+  --SmartThemeChatTintColor: var(--inv-chat);
+  --SmartThemeUserMesBlurTintColor: var(--inv-mes-user);
+  --SmartThemeBotMesBlurTintColor: var(--inv-mes);
+  --SmartThemeBorderColor: var(--inv-border);
+  /* ST's "glow" (Shadow Width) halo on UI text, tinted by the UI glow slider */
+  --SmartThemeShadowColor: color-mix(in srgb, var(--inv-accent) calc(var(--inv-ui-glow) * 0.6%), rgba(0, 0, 0, 0.35));
+  --SmartThemeButtonColor: var(--inv-bg-2);
+  --SmartThemeButtonTextColor: var(--inv-text);
+
+  /* Moonlit Echoes */
+  --customThemeColor: var(--inv-accent);
+  --customThemeColor2: var(--inv-strong);
+  --customBgColor1: color-mix(in srgb, var(--inv-accent) 10%, transparent);
+  --customBgColor2: color-mix(in srgb, var(--inv-accent) 6%, transparent);
+  --customTopBarColor: var(--inv-bg-2);
+  --Drawer-iconColor: var(--inv-muted);
+  --sheldBackgroundColor: var(--inv-chat);
+  --customScrollbarColor: color-mix(in srgb, var(--inv-muted) 55%, transparent);
+
+  /* TooManyTabs: re-derive its :root aliases from the body values */
+  --ST-Main-Text: var(--SmartThemeBodyColor);
+  --ST-Italics-Text: var(--SmartThemeEmColor);
+  --ST-Underlined-Text: var(--SmartThemeUnderlineColor);
+  --ST-Button-Background: var(--SmartThemeQuoteColor);
+  --ST-Quote-Text: var(--SmartThemeQuoteColor);
+  --ST-Text-Shadow: var(--SmartThemeShadowColor);
+  --ST-UI-Background: var(--SmartThemeBlurTintColor);
+  --ST-Chat-Background: var(--SmartThemeChatTintColor);
+  --ST-UI-Border: var(--SmartThemeBorderColor);
+  --ST-Tabs-Color: var(--inv-muted);
+  --ST-Tabs-Background: color-mix(in srgb, var(--inv-bg) 75%, transparent);
+  --ptmt-ui-tint: var(--ST-UI-Background);
+  --ptmt-ui-composite: oklch(from var(--ptmt-ui-tint) calc(l * alpha + var(--ptmt-bg-l) * (1 - alpha)) c h);
+  --ptmt-tab-default-color: var(--inv-muted);
+  --ptmt-tab-hover-color: var(--inv-warm);
+  --ptmt-tab-active-color: var(--inv-strong);
+  --ptmt-tab-border-color: var(--inv-border);
+  --ptmt-tab-bg-color: var(--ST-Tabs-Background);
+  --ptmt-tab-inactive-bg: var(--ST-Tabs-Background);
+  --ptmt-tab-hover-bg: color-mix(in srgb, var(--inv-bg) 80%, var(--inv-accent) 20%);
+  --ptmt-panel-bg: var(--inv-bg);
+  --ptmt-panel-border: var(--inv-border);
+} }
+
+/* cozy containment: palettes get a faint warm hairline around each message card */
+@container not style(--inv-palette: off) {
+  html body #chat .mes { border-color: color-mix(in srgb, var(--inv-warm) 14%, transparent) !important; }
+}

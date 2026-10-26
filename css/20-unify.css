@@ -1,0 +1,58 @@
+/* Inv 20 · Unified Chrome
+   One shape language for ST, Moonlit, TooManyTabs, Copilot and drawers: same radius, borders, focus, scrollbars. */
+body {
+  --inv-radius: 10px;
+  --inv-radius-sm: 7px;
+  --ptmt-radius: var(--inv-radius-sm);
+  --ptmt-tab-radius: var(--inv-radius-sm);
+  --ptmt-pane-radius: var(--inv-radius);
+  --ptmt-button-radius: var(--inv-radius-sm);
+  --scp-radius: var(--inv-radius);
+}
+
+/* text selection + keyboard focus in the accent color */
+::selection { background: color-mix(in srgb, var(--inv-accent, #5aa9e6) 35%, transparent); color: var(--inv-strong, #fff); }
+:is(button, .menu_button, .text_pole, input, select, textarea, .ptmt-tab):focus-visible {
+  outline: 2px solid var(--inv-accent, #5aa9e6) !important;
+  outline-offset: 1px;
+}
+
+/* thin, quiet scrollbars everywhere */
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--inv-muted, #888) 45%, transparent) transparent; }
+
+/* buttons: one shape, warm accent on hover */
+.menu_button, .qr--button, #qr--bar .qr--button, .mes_button, .drawer-icon, .ptmt-tab {
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+.menu_button, .qr--button { border-radius: var(--inv-radius-sm) !important; border-color: var(--SmartThemeBorderColor) !important; }
+.menu_button:hover, .qr--button:hover { border-color: var(--inv-warm, var(--SmartThemeQuoteColor)) !important; color: var(--inv-strong, inherit) !important; }
+.mes_button:hover, .drawer-icon:hover { color: var(--inv-warm, var(--SmartThemeQuoteColor)) !important; }
+
+/* inputs */
+.text_pole, textarea, select, input[type="text"], input[type="number"], input[type="search"] {
+  border-radius: var(--inv-radius-sm) !important;
+  border-color: var(--SmartThemeBorderColor) !important;
+}
+#send_textarea { font-size: calc(var(--inv-text-size, 16) * 0.94px) !important; line-height: 1.5 !important; }
+
+/* input bar: the outer box stays full width; its CONTENTS (textarea, buttons, QR rows) move inward.
+   Percentage padding is measured against the parent's width, so (100% - slider%) / 2 per side
+   centers the contents at exactly the slider's width. Narrower contents just grow more lines. */
+#send_form {
+  padding-inline: calc((100% - var(--inv-input-width, 100) * 1%) / 2) !important;
+  box-sizing: border-box !important;
+}
+#send_textarea { max-height: 40vh !important; }
+
+/* message cards + popups + drawers share the radius */
+#chat .mes, .popup, dialog.popup, .drawer-content, .inline-drawer, .ptmt-panel, .list-group, #send_form {
+  border-radius: var(--inv-radius) !important;
+}
+
+/* QR bar: tidy pills that wrap onto extra rows (centered) when the input bar is narrow */
+#qr--bar { gap: 6px !important; padding-block: 6px !important; }
+#qr--bar .qr--buttons { flex-wrap: wrap !important; justify-content: center; row-gap: 6px; overflow: visible !important; }
+#qr--bar .qr--button { font-size: 0.82rem !important; padding: 3px 10px !important; white-space: nowrap; }
+
+/* toasts match the palette */
+#toast-container > div { border-radius: var(--inv-radius) !important; border: 1px solid var(--SmartThemeBorderColor) !important; background-color: var(--inv-bg-2, var(--SmartThemeBlurTintColor)) !important; color: var(--SmartThemeBodyColor) !important; }

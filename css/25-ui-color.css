@@ -1,0 +1,103 @@
+/* Inv 25 · UI Color
+   Carries the active palette into menus, inputs, buttons, tabs and headers. Off when palette = your ST theme.
+   Roles: accent (blue) = structure · warm (amber) = on/hover/focus · accent-3 (rose) = section markers · danger = destructive.
+   UI glow slider scales every halo here (0 = flat, 100 = neon). */
+@container not style(--inv-palette: off) {
+  body {
+    --inv-a3: var(--inv-accent-3, var(--inv-em));
+    --inv-bad: var(--inv-danger, #e3743a);
+    --inv-g: calc(var(--inv-ui-glow) / 100);                       /* 0..1 */
+    --inv-glow-warm: 0 0 calc(var(--inv-g) * 14px) color-mix(in srgb, var(--inv-warm) calc(var(--inv-g) * 55%), transparent);
+    --inv-glow-accent: 0 0 calc(var(--inv-g) * 12px) color-mix(in srgb, var(--inv-accent) calc(var(--inv-g) * 50%), transparent);
+    --inv-glow-a3: 0 0 calc(var(--inv-g) * 12px) color-mix(in srgb, var(--inv-a3) calc(var(--inv-g) * 50%), transparent);
+  }
+
+  /* ---------- hairlines: structure in blue ---------- */
+  .text_pole, select, textarea:not(#send_textarea), input[type="text"], input[type="number"], input[type="search"] {
+    border-color: color-mix(in srgb, var(--inv-accent) 30%, transparent) !important;
+  }
+  .text_pole:focus, select:focus, textarea:not(#send_textarea):focus, input[type="text"]:focus, input[type="number"]:focus, input[type="search"]:focus {
+    border-color: var(--inv-warm) !important;
+    box-shadow: var(--inv-glow-warm) !important;
+  }
+  hr { border-color: color-mix(in srgb, var(--inv-accent) 22%, transparent) !important; }
+  a, a:visited { color: var(--inv-accent); }
+  a:hover { color: var(--inv-warm); }
+
+  /* ---------- headers: rose section markers, blue titles ---------- */
+  .inline-drawer-header {
+    border-left: 3px solid var(--inv-a3) !important;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--inv-a3) 12%, transparent), transparent 70%) !important;
+    color: var(--inv-strong) !important;
+  }
+  .inline-drawer-header:hover { box-shadow: var(--inv-glow-a3) !important; }
+  :is(.drawer-content, .ptmt-panel, .popup, #user-settings-block) :is(h2, h3, h4) {
+    color: var(--inv-accent) !important;
+    text-shadow: var(--inv-glow-accent);
+  }
+
+  /* ---------- buttons ---------- */
+  .menu_button {
+    background-color: color-mix(in srgb, var(--inv-accent) 7%, transparent) !important;
+    border-color: color-mix(in srgb, var(--inv-accent) 32%, transparent) !important;
+  }
+  .menu_button:hover {
+    color: var(--inv-warm) !important;
+    border-color: var(--inv-warm) !important;
+    background-color: color-mix(in srgb, var(--inv-warm) 10%, transparent) !important;
+    box-shadow: var(--inv-glow-warm) !important;
+  }
+  .menu_button:is(.active, .toggleEnabled, .selected) {
+    background-color: color-mix(in srgb, var(--inv-accent) 24%, transparent) !important;
+    border-color: var(--inv-accent) !important;
+    box-shadow: var(--inv-glow-accent) !important;
+  }
+  :is(.menu_button, .mes_button, .fa-solid):is(.redWarningBG, .mes_delete, .fa-trash-can, .fa-trash):hover,
+  .redWarningBG { color: var(--inv-bad) !important; border-color: var(--inv-bad) !important; }
+
+  /* ---------- toggles + sliders: amber means "on" ---------- */
+  input[type="checkbox"]:checked, input[type="radio"]:checked {
+    background-color: var(--inv-warm) !important;
+    box-shadow: var(--inv-glow-warm) !important;
+  }
+  input[type="checkbox"]:not(:checked), input[type="radio"]:not(:checked) {
+    background-color: color-mix(in srgb, var(--inv-accent) 18%, transparent) !important;
+  }
+  input[type="range"], .neo-range-slider { background-color: color-mix(in srgb, var(--inv-accent) 55%, transparent) !important; }
+  input[type="range"]::-webkit-slider-thumb { background: var(--inv-warm) !important; box-shadow: var(--inv-glow-warm) !important; }
+
+  /* ---------- tabs + top icons ---------- */
+  .ptmt-tab { transition: color 140ms ease, box-shadow 140ms ease, border-color 140ms ease; }
+  .ptmt-tab:hover { color: var(--inv-warm) !important; }
+  .ptmt-tab.active {
+    color: var(--inv-strong) !important;
+    border-color: var(--inv-a3) !important;
+    box-shadow: inset 0 -2px 0 0 var(--inv-a3), var(--inv-glow-a3) !important;
+  }
+  .ptmt-tab.active i, .ptmt-tab.active .fa-solid { color: var(--inv-a3) !important; }
+  .drawer-icon:hover, .mes_button:hover, .right_menu_button:hover { color: var(--inv-warm) !important; text-shadow: var(--inv-glow-warm); }
+
+  /* ---------- input bar: a lit edge, amber when you're typing ---------- */
+  #send_form {
+    border: 1px solid color-mix(in srgb, var(--inv-accent) 28%, transparent) !important;
+    border-top: 1px solid transparent !important;
+    background-image: linear-gradient(90deg, var(--inv-accent), var(--inv-a3), var(--inv-warm)) !important;
+    background-size: 100% 1px !important; background-repeat: no-repeat !important; background-position: top !important;
+    transition: box-shadow 180ms ease;
+  }
+  #send_form:focus-within {
+    border-color: color-mix(in srgb, var(--inv-warm) 55%, transparent) !important;
+    box-shadow: var(--inv-glow-warm), 0 -8px 30px -18px var(--inv-warm) !important;
+  }
+  #send_but, #mes_continue { color: var(--inv-warm) !important; }
+  #send_but:hover { text-shadow: var(--inv-glow-warm); }
+  #send_textarea::placeholder { color: color-mix(in srgb, var(--inv-muted) 80%, transparent) !important; }
+
+  /* ---------- QR pills + toasts ---------- */
+  #qr--bar .qr--button { border-color: color-mix(in srgb, var(--inv-accent) 28%, transparent) !important; }
+  #qr--bar .qr--button:hover { border-color: var(--inv-warm) !important; color: var(--inv-warm) !important; box-shadow: var(--inv-glow-warm) !important; }
+  #toast-container > div { border-left: 3px solid var(--inv-a3) !important; }
+
+  /* scrollbars pick up the blue */
+  * { scrollbar-color: color-mix(in srgb, var(--inv-accent) 40%, transparent) transparent; }
+}

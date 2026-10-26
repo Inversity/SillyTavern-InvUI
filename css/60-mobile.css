@@ -1,0 +1,161 @@
+/* Inv 60 · Mobile
+   Tablet/phone fixes. Keyed off html[data-inv-device="mobile"] (set by Inv UI per device)
+   plus a width check for the input bar, so the desktop is untouched.
+   Tuned on a typical 8-inch Android tablet: about 600 x 890 CSS px in portrait. */
+
+/* 1) Input bar: the desktop "Input bar width" padding crushed the textarea on narrow screens */
+@media (max-width: 1000px) {
+  #send_form { padding-inline: 0 !important; }
+}
+html[data-inv-device="mobile"] #send_form { padding-inline: 0 !important; }
+
+/* 1b) Moonlit's mobile input is a CSS grid with a full-width row named "textarea" (buttons below).
+       Inline Assistant wraps the textarea in a cell, so the grid saw the CELL, which fell into a
+       half-width slot. Put the cell in the textarea row; Input History's buttons then sit at its right end,
+       and the textarea reserves that space so typed text never runs under them. */
+@media (max-width: 1000px) {
+  #nonQRFormItems > #inline_assistant_editor_cell {
+    grid-area: textarea !important;
+    width: 100% !important; min-width: 0 !important;
+  }
+  #nonQRFormItems #send_textarea { width: 100% !important; padding-right: 96px !important; box-sizing: border-box; }
+}
+
+/* 1c) Typing inset: text starts away from the edge and ends before the history buttons */
+html[data-inv-device="mobile"] #send_form { padding-inline: 12px !important; }
+html[data-inv-device="mobile"] #nonQRFormItems #send_textarea { padding: 8px 96px 8px 14px !important; }
+
+/* 1d) Quick Reply pills: one row you swipe sideways (fingers scroll horizontally; mouse wheels don't,
+       which is why the desktop wraps instead). Saves a row of height for the chat. */
+html[data-inv-device="mobile"] #qr--bar .qr--buttons {
+  flex-wrap: nowrap !important; justify-content: flex-start !important;
+  overflow-x: auto !important; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+}
+
+/* 2) Layout height: TooManyTabs sized itself to the LARGE viewport (983px) while only 886px was visible
+      under the browser bars, so the bottom of every panel (e.g. User Settings) was unreachable.
+      dvh = the dynamic viewport, which tracks what is actually visible. */
+html[data-inv-device="mobile"] #ptmt-main {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+}
+
+/* 3) Speed: frosted blur is the most expensive effect for a weak GPU, so mobile drops it everywhere.
+      Cards go nearly solid instead, so text stays readable without blur behind it. */
+html[data-inv-device="mobile"] * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-inv-device="mobile"] #chat {
+  --SmartThemeBotMesBlurTintColor: color-mix(in srgb, rgb(from var(--inv-mes-src) r g b) 95%, transparent);
+  --SmartThemeUserMesBlurTintColor: color-mix(in srgb, rgb(from var(--inv-mes-user-src) r g b) 95%, transparent);
+}
+html[data-inv-device="mobile"] :is(#bg1, #bg_custom) {
+  filter: brightness(calc(1 - var(--inv-wall-dim) / 100)) !important;  /* keep the dim, drop the blur */
+  transform: none !important;
+}
+/* the message card rule in 10-reading.css is more specific than the blanket rule above, so beat it explicitly */
+html[data-inv-device="mobile"] body #chat .mes {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+/* 4) Portrait on a narrow screen (Ripple). "Tablet portrait" control picks the mode:
+      side     = beside the text, smaller (the original fix)
+      backdrop = faded behind the text, stays put while scrolling; text gets the full width
+      band     = a wide banner above each reply that scrolls away; then full-width text
+      off      = no portrait */
+html[data-inv-device="mobile"] #chat .mes[is_user="false"] {
+  --inv-pad: calc(var(--inv-portrait-pad, 6) * 1px);
+  --inv-pv-h: calc(100cqh * var(--inv-portrait-height, 50) / 100 - 2 * var(--inv-pad) - 30px);
+}
+
+/* backdrop */
+@container style(--inv-mobile-portrait: backdrop) {
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] {
+    flex-direction: column !important; position: relative; overflow: clip !important;
+    flex-shrink: 0 !important;  /* clipping drops a flex item's min-height to 0; #chat would squash the message flat */
+  }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper {
+    position: sticky !important; top: 0 !important;
+    display: block !important; width: 100% !important; height: 100cqh !important;
+    margin-bottom: -100cqh !important;   /* takes no space: the text flows over it */
+    padding: 0 !important; z-index: 0; pointer-events: none;
+  }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper > :not(.avatar) { display: none !important; }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar,
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+    width: 100% !important; height: 100% !important; max-width: none !important; max-height: none !important; min-width: 0 !important;
+  }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+    object-fit: cover !important; object-position: center calc(var(--inv-stage-focus) * 1%) !important;
+    opacity: calc(var(--inv-backdrop-strength) / 100);
+    -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent 95%) !important;
+            mask-image: linear-gradient(to bottom, #000 35%, transparent 95%) !important;
+  }
+  /* in a column, ST's .mes_block (flex: 1 from a zero base, overflow clipped) collapses to its padding: size it by content */
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mes_block { position: relative; z-index: 1; width: 100%; flex: 0 0 auto !important; }
+}
+
+/* band */
+@container style(--inv-mobile-portrait: band) {
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] { flex-direction: column !important; }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper {
+    position: static !important; width: 100% !important; padding: 6px 6px 0 !important;
+    grid-template-columns: repeat(3, 1fr) !important;   /* desktop grid used auto columns, which centered a narrow image */
+  }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper > .avatar { justify-self: stretch !important; }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar,
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+    width: 100% !important; max-width: none !important; min-width: 0 !important;
+    height: calc(var(--inv-band-h, 32) * 1cqh) !important; max-height: calc(var(--inv-band-h, 32) * 1cqh) !important;
+  }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper .avatar img {
+    object-fit: cover !important; object-position: center calc(var(--inv-stage-focus) * 1%) !important;
+    -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent) !important;
+            mask-image: linear-gradient(to bottom, #000 65%, transparent) !important;
+  }
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mes_block { width: 100%; flex: 0 0 auto !important; }
+}
+
+/* split (visual-novel style): a fixed stage image on top, the chat scrolls in its own window below.
+   index.js publishes --inv-stage-url (latest character reply's full-size image). #sheld is a flex column:
+   info bar, [stage], chat, input. #sheld::before is already used as a background tint layer, so the stage
+   is #sheld::after, pulled up under the info bar with `order`. */
+@container style(--inv-mobile-portrait: split) {
+  html[data-inv-device="mobile"] #sheld > #extensionTopBar { order: -2; }
+  /* stage and chat split the space LEFT AFTER the info bar and input: "area" 50 = a true 50/50 */
+  html[data-inv-device="mobile"] #sheld::after {
+    content: "";
+    display: block;
+    position: static;
+    order: -1;
+    flex: var(--inv-stage-h) 1 0px;
+    min-height: 0;
+    margin: 4px 6px 0;
+    border-radius: 14px;
+    /* three layers, top to bottom:
+       1. the image at "size" (100 = whole image fits the height), positioned by "focus"
+       2. a dark veil
+       3. the same image enlarged to fill the stage, so the area beside a shrunken image isn't empty */
+    background:
+      var(--inv-stage-url, none) center calc(var(--inv-stage-focus) * 1%) / auto calc(var(--inv-stage-size) * 1%) no-repeat,
+      linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)),
+      var(--inv-stage-url, none) center calc(var(--inv-stage-focus) * 1%) / cover no-repeat;
+    /* optional fade into the chat: 0 = hard edge */
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--inv-stage-fade) * 1%), transparent);
+            mask-image: linear-gradient(to bottom, #000 calc(100% - var(--inv-stage-fade) * 1%), transparent);
+  }
+  html[data-inv-device="mobile"] #sheld > #chat {
+    flex: calc(100 - var(--inv-stage-h)) 1 0px !important;
+    min-height: 0 !important;
+  }
+  /* the stage replaces the per-message images (.mes.mes outranks the desktop portrait rule) */
+  html[data-inv-device="mobile"] body #chat .mes.mes[is_user="false"] .mesAvatarWrapper { display: none !important; }
+}
+
+/* off */
+@container style(--inv-mobile-portrait: off) {
+  html[data-inv-device="mobile"] body.ripplestyle #chat .mes[is_user="false"] .mesAvatarWrapper { display: none !important; }
+}

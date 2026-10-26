@@ -1,0 +1,144 @@
+/* Inv 10 · Reading
+   Typography + a centered reading column sized in characters, next to the Ripple/Echo portrait. */
+body {
+  --inv-size-px: calc(var(--inv-text-size) * 1px);
+  /* ~0.52em is the average glyph width for these fonts: chars/line -> pixels */
+  --inv-column: calc(var(--inv-measure) * var(--inv-text-size) * 0.52px);
+  /* Moonlit Ripple portrait follows the slider */
+  --customRippleAvatarWidth: calc(var(--inv-portrait) * 1vw);
+  /* feed Moonlit's own <p> rule instead of fighting it */
+  --messageTextFontSize: var(--inv-size-px);
+  --messageLineHeight: var(--inv-leading);
+  --messageTextLetterSpacing: calc(var(--inv-tracking) * 1em);
+  --mesParagraphSpacingTop: 0;
+  --mesParagraphSpacingBottom: calc(var(--inv-para-gap) * 1em);
+}
+
+/* the column: name row, text, reasoning and swipe counter share one width, centered in the free space */
+#chat .mes .mes_block { min-width: 0; }
+#chat .mes .mes_block > .ch_name,
+#chat .mes .mes_block > .mes_reasoning_details,
+#chat .mes .mes_text,
+#chat .mes .mes_block > .mes_bias {
+  width: 100%;
+  max-width: var(--inv-column);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+/* type */
+#chat .mes .mes_text {
+  font-family: var(--inv-font) !important;
+  font-size: var(--inv-size-px) !important;
+  font-weight: var(--inv-weight) !important;
+  line-height: var(--inv-leading) !important;
+  letter-spacing: calc(var(--inv-tracking) * 1em) !important;
+  color: var(--SmartThemeBodyColor);
+  text-wrap: pretty;          /* avoids one-word last lines */
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+#chat .mes .mes_text p:last-child { --mesParagraphSpacingBottom: 0; }
+
+/* emphasis hierarchy: color does the work, weight stays gentle */
+#chat .mes .mes_text em,
+#chat .mes .mes_text i { color: var(--SmartThemeEmColor); font-style: italic; }
+#chat .mes .mes_text strong,
+#chat .mes .mes_text b { color: var(--inv-strong, inherit); font-weight: calc(var(--inv-weight) + 200); }
+#chat .mes .mes_text q { color: var(--SmartThemeQuoteColor); }
+#chat .mes .mes_text q em { color: inherit; opacity: 0.85; }
+#chat .mes .mes_text hr { border: 0; height: 1px; background: var(--SmartThemeBorderColor); margin: 1.4em 15%; }
+#chat .mes .mes_text blockquote {
+  border-left: 3px solid var(--inv-accent, var(--SmartThemeQuoteColor));
+  margin: 0.8em 0; padding: 0.2em 0 0.2em 1em; color: var(--inv-muted, inherit);
+}
+
+/* calm dialogue color: beats TooManyTabs' per-character rule only when chosen */
+@container style(--inv-dialogue: palette) {
+  html body #chat .mes[xdc-author-uid] .mes_text q,
+  html body #chat .mes .mes_text q { color: var(--SmartThemeQuoteColor) !important; }
+}
+
+/* name row */
+#chat .mes .ch_name .name_text { letter-spacing: 0.02em; }
+#chat .mes .timestamp, #chat .mes .mesIDDisplay, #chat .mes .tokenCounterDisplay, #chat .mes .mes_timer {
+  color: var(--inv-muted, inherit); opacity: 0.75; font-size: 0.78rem;
+}
+
+/* ---------- frosted glass ----------
+   Moonlit's fade mask on #chat makes it a "backdrop root": blur inside it can't see the wallpaper.
+   Dropping the mask lets each message blur what is actually behind it. */
+#chat { -webkit-mask-image: none !important; mask-image: none !important; }
+/* Solidity: Moonlit/ST paint .mes with heavier rules that read these variables, so set the
+   variables on #chat (messages inherit them) instead of fighting over background-color.
+   Source = palette color if one is active, else your ST theme's own message color; alpha = slider. */
+body {
+  --inv-mes-src: var(--inv-mes, var(--SmartThemeBotMesBlurTintColor));
+  --inv-mes-user-src: var(--inv-mes-user, var(--SmartThemeUserMesBlurTintColor));
+}
+#chat {
+  --SmartThemeBotMesBlurTintColor: color-mix(in srgb, rgb(from var(--inv-mes-src) r g b) calc(var(--inv-mes-opacity) * 1%), transparent);
+  --SmartThemeUserMesBlurTintColor: color-mix(in srgb, rgb(from var(--inv-mes-user-src) r g b) calc(var(--inv-mes-opacity) * 1%), transparent);
+  --ST-Bot-Message-Background: var(--SmartThemeBotMesBlurTintColor);
+  --ST-User-Message-Background: var(--SmartThemeUserMesBlurTintColor);
+}
+#chat .mes {
+  background-color: var(--SmartThemeBotMesBlurTintColor) !important;
+  backdrop-filter: blur(calc(var(--inv-glass) * 1px)) saturate(1.15) !important;
+  -webkit-backdrop-filter: blur(calc(var(--inv-glass) * 1px)) saturate(1.15) !important;
+  border: 1px solid color-mix(in srgb, var(--inv-strong, #fff) 6%, transparent) !important;
+  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55) !important;
+  border-radius: 16px !important;
+}
+html body #chat .mes { background-color: var(--SmartThemeBotMesBlurTintColor) !important; }
+html body #chat .mes[is_user="true"] { background-color: var(--SmartThemeUserMesBlurTintColor) !important; }
+#chat .mes .mes_block { padding-block: 0.6em 0.9em; padding-inline: 0.5em; }
+/* a whisper of shadow keeps letters crisp on glass */
+/* ST puts its own glow directly on <p>/<q>; story text gets a quiet fixed shadow instead */
+html body #chat .mes .mes_text,
+html body #chat .mes .mes_text :is(p, em, i, strong, b, span, li, font, u, s) {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+/* Dialogue glow: quotes radiate their own color */
+html body #chat .mes .mes_text q,
+html body #chat .mes .mes_text q * {
+  text-shadow:
+    0 0 calc(var(--inv-dlg-glow) * 0.12px) color-mix(in srgb, currentColor calc(var(--inv-dlg-glow) * 0.7%), transparent),
+    0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* wallpaper: soften and dim it so the story stays the brightest thing on screen */
+#bg1, #bg_custom {
+  /* dimming drains color, so saturation rises with it to keep the wallpaper's hue */
+  filter: blur(calc(var(--inv-wall-blur) * 1px)) brightness(calc(1 - var(--inv-wall-dim) / 100)) saturate(calc(1 + var(--inv-wall-dim) / 80)) !important;
+  transform: scale(1.04); /* hides the blurry edge halo */
+}
+
+/* ---------- story text card: the inner box that makes text sit on a calm surface ----------
+   (Echo already paints its own text box, so it is left alone there) */
+@container style(--inv-story-card: card) {
+  html body:not(.echostyle) #chat .mes[is_user="false"] .mes_text {
+    background: color-mix(in srgb, var(--inv-accent, #5aa9e6) 7%, transparent);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 12px;
+    padding: 0.8em 1.1em !important;
+  }
+}
+
+/* ---------- your messages (no persona avatar) ---------- */
+#chat .mes[is_user="true"] .mesAvatarWrapper { display: none; }
+@container style(--inv-user-style: quiet) {
+  #chat .mes[is_user="true"] .mes_text {
+    color: var(--inv-muted, var(--SmartThemeBodyColor));
+    border-left: 2px solid color-mix(in srgb, var(--inv-accent, var(--SmartThemeQuoteColor)) 70%, transparent);
+    padding-left: 1em;
+  }
+  #chat .mes[is_user="true"] .ch_name .name_text { color: var(--inv-accent, inherit); font-size: 0.95rem !important; }
+}
+@container style(--inv-user-style: card) {
+  #chat .mes[is_user="true"] .mes_text {
+    background: color-mix(in srgb, var(--inv-accent, #5aa9e6) 9%, transparent);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 12px; padding: 0.7em 1em;
+  }
+}
